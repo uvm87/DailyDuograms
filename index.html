@@ -1,0 +1,1324 @@
+<!DOCTYPE html>
+<!--
+  Daily Duograms
+  Copyright © 2026 UVM87 Games. All rights reserved.
+
+  This code and its original content may not be reproduced, distributed,
+  or used to create derivative works without express written permission
+  from the copyright holder.
+-->
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no" />
+<title>Daily Duograms</title>
+
+<!-- Google Analytics (GA4) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-TVSQCE84JK"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){ dataLayer.push(arguments); }
+  gtag('js', new Date());
+  gtag('config', 'G-TVSQCE84JK');
+</script>
+<style>
+  :root{
+    --field:#173B2B;
+    --field-dark:#0F2A1F;
+    --chalk:#F3EFE4;
+    --chalk-line:#D8D0BC;
+    --ink:#1B2430;
+    --stitch:#B0332A;
+    --stitch-dark:#8A241D;
+    --amber:#E0A73B;
+    --font-display: 'Arial Narrow', 'Helvetica Neue Condensed', Arial, sans-serif;
+    --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-mono: 'Courier New', ui-monospace, monospace;
+  }
+  *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html,body{ height:100%; margin:0; }
+  body{
+    background: #FFFFFF;
+    color:var(--chalk);
+    font-family:var(--font-body);
+    min-height:100%;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:0 0 24px;
+    overflow-x:hidden;
+  }
+
+  /* ---------- background sport icons ---------- */
+  .bg-icons{
+    position:fixed;
+    inset:0;
+    z-index:0;
+    pointer-events:none;
+    overflow:hidden;
+  }
+  .bg-icons svg{
+    position:absolute;
+    width:300px;
+    height:300px;
+    opacity:1;
+  }
+  .bg-icons .icon-baseball{ top:6%; left:4%; transform:rotate(-12deg); }
+  .bg-icons .icon-football{ top:8%; right:4%; transform:rotate(18deg); }
+  .bg-icons .icon-basketball{ bottom:6%; left:5%; transform:rotate(8deg); }
+  .bg-icons .icon-puck{ bottom:8%; right:6%; transform:rotate(-6deg); }
+
+  /* Everything the player actually interacts with needs to sit above the
+     fixed background icon layer. */
+  #topbar, .card, #board-header, #screen-board{
+    position:relative;
+    z-index:1;
+  }
+
+  .eyebrow{
+    font-family:var(--font-display);
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    font-size:12px;
+    color:var(--amber);
+    font-weight:700;
+  }
+  h1.title{
+    font-family:var(--font-display);
+    font-weight:700;
+    letter-spacing:0.02em;
+    font-size:26px;
+    margin:6px 0 2px;
+    text-transform:uppercase;
+  }
+  h1.game-title{
+    font-family:var(--font-display);
+    font-weight:700;
+    letter-spacing:0.02em;
+    font-size:36px;
+    line-height:1.05;
+    margin:4px 0 6px;
+    text-transform:uppercase;
+    text-align:center;
+    color:var(--ink);
+  }
+  .copyright-line{
+    font-size:11px;
+    color:#8a8474;
+    text-align:center;
+    margin-bottom:6px;
+  }
+  .game-tagline{
+    font-size:18px;
+    font-family:var(--font-body);
+    color:var(--ink);
+    text-align:center;
+    font-weight:600;
+    margin:0 0 8px;
+  }
+  .subtitle{ font-size:15px; color:#5b6472; margin-bottom:10px; text-align:center; }
+  #screen-sport .eyebrow{ font-size:18px; }
+
+  .card{
+    width:92%;
+    max-width:440px;
+    background:var(--chalk);
+    color:var(--ink);
+    border-radius:6px;
+    margin-top:28px;
+    padding:22px 20px 26px;
+    box-shadow:0 18px 40px rgba(0,0,0,0.35);
+    position:relative;
+  }
+  .card:before{
+    content:"";
+    position:absolute; top:0; left:28px; right:28px; height:10px;
+    background:repeating-linear-gradient(90deg, var(--stitch) 0 10px, transparent 10px 20px);
+    opacity:0.55;
+  }
+
+  /* ---------- sport select ---------- */
+  .sport-grid{ display:flex; flex-direction:column; gap:10px; margin-top:16px; }
+  .sport-btn{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:16px 18px;
+    border-radius:6px;
+    border:1.5px solid var(--ink);
+    background:transparent;
+    color:var(--ink);
+    font-family:var(--font-display);
+    text-transform:uppercase;
+    font-weight:700;
+    font-size:18px;
+    letter-spacing:0.03em;
+    cursor:pointer;
+  }
+  .sport-btn .tag{
+    font-family:var(--font-body);
+    text-transform:none;
+    font-weight:600;
+    font-size:11px;
+    color:#8a8474;
+    letter-spacing:0;
+  }
+  .sport-btn-label{ display:flex; flex-direction:column; align-items:flex-start; gap:3px; }
+  .sport-btn-years{
+    font-family:var(--font-body);
+    text-transform:none;
+    font-weight:600;
+    font-size:11px;
+    color:#8a8474;
+    letter-spacing:0;
+  }
+  .sport-btn.disabled{ opacity:0.45; cursor:default; }
+  .sport-btn:not(.disabled):active{ background:var(--ink); color:var(--chalk); }
+
+  .primary-btn{
+    width:100%;
+    margin-top:18px;
+    padding:13px;
+    border:none;
+    border-radius:4px;
+    background:var(--stitch);
+    color:#fff;
+    font-family:var(--font-display);
+    text-transform:uppercase;
+    font-weight:700;
+    font-size:16px;
+    letter-spacing:0.04em;
+    cursor:pointer;
+  }
+  .primary-btn:active{ background:var(--stitch-dark); }
+  .ghost-btn{
+    width:100%;
+    margin-top:10px;
+    padding:11px;
+    border:1.5px solid var(--ink);
+    border-radius:4px;
+    background:transparent;
+    color:var(--ink);
+    font-family:var(--font-display);
+    text-transform:uppercase;
+    font-weight:700;
+    font-size:14px;
+    letter-spacing:0.03em;
+    cursor:pointer;
+  }
+
+  .puzzle-num{ text-align:center; font-family:var(--font-mono); font-size:13px; color:#5b6472; margin-top:2px; }
+
+  .rsg-overlay{
+    position:fixed;
+    inset:0;
+    z-index:900;
+    background:rgba(15,42,31,0.8);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    pointer-events:auto;
+  }
+  .rsg-circle{
+    width:220px;
+    height:220px;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-family:var(--font-display);
+    font-weight:800;
+    font-size:32px;
+    color:#000;
+    text-transform:uppercase;
+    letter-spacing:0.02em;
+    box-shadow:0 10px 40px rgba(0,0,0,0.45);
+    background:var(--stitch);
+  }
+
+  /* ---------- top bar ---------- */
+  #stickyHeaderWrap{
+    position:sticky;
+    top:0;
+    z-index:50;
+    width:100%;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    background:#fff;
+  }
+  #topbar{
+    width:100%; max-width:520px;
+    display:flex; justify-content:space-between; align-items:center;
+    padding:14px 18px 8px;
+  }
+  #topbar .eyebrow{ font-size:36px; }
+  #board-header{
+    background:var(--chalk); color:var(--ink); border-radius:6px;
+    padding:10px 16px; display:flex; justify-content:space-between; align-items:center;
+    margin:10px 0 14px; width:94%; max-width:520px;
+  }
+  #board-header .col{ text-align:center; }
+  #board-header .col .label{ font-size:11px; text-transform:uppercase; letter-spacing:0.08em; color:#5b6472; font-family:var(--font-display); }
+  #board-header .col .value{ font-family:var(--font-display); font-size:26px; font-weight:700; }
+  #timerNum.low{ color:var(--stitch); animation:pulse 1s infinite; }
+  @keyframes pulse{ 0%,100%{opacity:1;} 50%{opacity:0.45;} }
+
+  #screen-board{ display:none; width:94%; max-width:520px; }
+  .grid{ display:flex; flex-direction:column; gap:6px; }
+  .tile{
+    position:relative;
+    background:var(--chalk);
+    border-radius:4px;
+    display:flex; align-items:center; gap:14px;
+    padding:10px 16px;
+    font-family:var(--font-mono);
+    font-weight:700;
+    font-size:20px;
+    color:var(--ink);
+    cursor:pointer;
+    border:2px solid transparent;
+    border-bottom:1px dashed var(--chalk-line);
+    overflow:hidden;
+  }
+  .tile.selected{ border-color:var(--amber); }
+  .tile.solved{ background:#DCEFDD; color:#1F5C2C; }
+  .tile.unsolvable{ background:#FBEFC4; color:#8A6D1D; }
+  .tile.unsolvable .idx{ color:#B8A15C; }
+  .tile .unsolvableNote{
+    font-family:var(--font-body); font-weight:600; font-size:14px; letter-spacing:0;
+    color:#8A6D1D; font-style:italic; opacity:0; animation:nameIn 0.3s ease 0.15s forwards;
+  }
+  .tile .idx{ font-size:11px; color:#a29c8c; font-family:var(--font-display); min-width:20px; }
+  .tile.solved .idx{ color:#5C9469; }
+  .tile .letters{ letter-spacing:0.12em; min-width:44px; }
+  .tile .solvedName{
+    font-family:var(--font-body); font-weight:600; font-size:15px; letter-spacing:0;
+    color:#1F5C2C; opacity:0; animation:nameIn 0.3s ease 0.15s forwards;
+    flex:1;
+  }
+  .tile .pointsEarned{
+    font-family:var(--font-mono); font-weight:700; font-size:15px; letter-spacing:0;
+    color:#1F5C2C; opacity:0; animation:nameIn 0.3s ease 0.15s forwards;
+    min-width:52px; text-align:right; margin-right:34px; flex-shrink:0;
+  }
+  @keyframes nameIn{ to{ opacity:1; } }
+  .tile svg.stitch{ position:absolute; right:14px; top:50%; transform:translateY(-50%); width:26px; height:26px; }
+  .tile svg.stitch path{ stroke:#fff; stroke-width:4; fill:none; stroke-linecap:round; stroke-dasharray:60; stroke-dashoffset:60; animation:draw 0.35s ease forwards; }
+  @keyframes draw{ to{ stroke-dashoffset:0; } }
+  .tile.shake{ animation:shake 0.35s; }
+  @keyframes shake{
+    10%,90%{ transform:translateX(-2px); } 20%,80%{ transform:translateX(3px); }
+    30%,50%,70%{ transform:translateX(-5px); } 40%,60%{ transform:translateX(5px); }
+  }
+
+  #guessbar{
+    position:sticky; bottom:12px; margin-top:16px;
+    background:var(--chalk); color:var(--ink); border-radius:6px;
+    padding:12px 14px; box-shadow:0 10px 30px rgba(0,0,0,0.4);
+  }
+  #guessbar .selectedInitials{ font-family:var(--font-display); font-size:22px; font-weight:700; letter-spacing:0.05em; margin-bottom:6px; }
+  #guessRow{ display:flex; gap:8px; }
+  #guessRow input{ flex:1; padding:10px 12px; font-size:16px; border:1px solid var(--chalk-line); border-radius:4px; background:#fff; color:var(--ink); font-family:var(--font-mono); }
+  #guessRow button{ padding:0 18px; border:none; border-radius:4px; background:var(--field); color:var(--chalk); font-family:var(--font-display); text-transform:uppercase; font-weight:700; font-size:14px; }
+
+  #toastBanner{
+    position:fixed;
+    top:0; left:0; right:0;
+    z-index:1000;
+    padding:21px 30px;
+    text-align:center;
+    font-family:var(--font-display);
+    font-weight:700;
+    font-size:24px;
+    letter-spacing:0.03em;
+    text-transform:uppercase;
+    color:#fff;
+    transform:translateY(-100%);
+    transition:transform 0.2s ease;
+    pointer-events:none;
+  }
+  #toastBanner.show{ transform:translateY(0); }
+  #toastBanner.correct{ background:#2E6B3E; }
+  #toastBanner.incorrect{ background:var(--stitch); }
+
+  #screen-summary{ display:none; }
+  #screen-summary .big{ font-family:var(--font-display); font-size:52px; font-weight:700; text-align:center; }
+  #shareText{
+    width:100%; margin-top:14px; padding:12px; border-radius:4px;
+    border:1px solid var(--chalk-line); background:#fff; color:var(--ink);
+    font-family:var(--font-mono); font-size:13px; white-space:pre-wrap; resize:none;
+  }
+  .countdown{ text-align:center; font-size:12px; color:#5b6472; margin-top:12px; }
+</style>
+</head>
+<body>
+
+  <div id="toastBanner"></div>
+
+  <div class="bg-icons" aria-hidden="true">
+    <svg class="icon-baseball" viewBox="0 0 100 100">
+      <circle cx="50" cy="50" r="46" fill="#F3EFE4" stroke="#D8D0BC" stroke-width="2"/>
+      <path d="M20,20 Q50,35 20,80" fill="none" stroke="#B0332A" stroke-width="3"/>
+      <path d="M80,20 Q50,35 80,80" fill="none" stroke="#B0332A" stroke-width="3"/>
+      <g stroke="#B0332A" stroke-width="1.5">
+        <line x1="22" y1="26" x2="28" y2="24"/>
+        <line x1="18" y1="38" x2="25" y2="37"/>
+        <line x1="18" y1="50" x2="25" y2="50"/>
+        <line x1="18" y1="62" x2="25" y2="62"/>
+        <line x1="22" y1="74" x2="28" y2="76"/>
+        <line x1="78" y1="26" x2="72" y2="24"/>
+        <line x1="82" y1="38" x2="75" y2="37"/>
+        <line x1="82" y1="50" x2="75" y2="50"/>
+        <line x1="82" y1="62" x2="75" y2="62"/>
+        <line x1="78" y1="74" x2="72" y2="76"/>
+      </g>
+    </svg>
+
+    <svg class="icon-football" viewBox="0 0 100 100">
+      <ellipse cx="50" cy="50" rx="46" ry="26" fill="#8B5A2B"/>
+      <path d="M8,50 Q50,30 92,50 Q50,70 8,50 Z" fill="none" stroke="#5C3A1A" stroke-width="2"/>
+      <line x1="35" y1="50" x2="65" y2="50" stroke="#F3EFE4" stroke-width="2.5"/>
+      <g stroke="#F3EFE4" stroke-width="2">
+        <line x1="40" y1="45" x2="40" y2="55"/>
+        <line x1="46" y1="45" x2="46" y2="55"/>
+        <line x1="54" y1="45" x2="54" y2="55"/>
+        <line x1="60" y1="45" x2="60" y2="55"/>
+      </g>
+    </svg>
+
+    <svg class="icon-basketball" viewBox="0 0 100 100">
+      <circle cx="50" cy="50" r="46" fill="#D9772E"/>
+      <line x1="4" y1="50" x2="96" y2="50" stroke="#1B2430" stroke-width="2.5"/>
+      <line x1="50" y1="4" x2="50" y2="96" stroke="#1B2430" stroke-width="2.5"/>
+      <path d="M8,25 Q50,50 8,75" fill="none" stroke="#1B2430" stroke-width="2.5"/>
+      <path d="M92,25 Q50,50 92,75" fill="none" stroke="#1B2430" stroke-width="2.5"/>
+    </svg>
+
+    <svg class="icon-puck" viewBox="0 0 100 100">
+      <ellipse cx="50" cy="55" rx="44" ry="18" fill="#1B2430"/>
+      <ellipse cx="50" cy="48" rx="44" ry="18" fill="#2E3A46" stroke="#0F1620" stroke-width="2"/>
+    </svg>
+  </div>
+
+  <div id="stickyHeaderWrap">
+    <div id="topbar" style="display:none;">
+      <div class="eyebrow" id="topbarSport">MLB</div>
+      <div class="eyebrow" id="topbarPuzzleNum"></div>
+    </div>
+    <div id="board-header" style="display:none;">
+      <div class="col"><div class="label">Score</div><div class="value" id="scoreNum">0</div></div>
+      <div class="col"><div class="label">Solved</div><div class="value" id="solvedNum">0/26</div></div>
+      <div class="col"><div class="label">Time</div><div class="value" id="timerNum">10:00</div></div>
+    </div>
+  </div>
+
+  <!-- SPORT SELECT -->
+  <div id="screen-sport" class="card">
+    <h1 class="game-title">Daily Duograms</h1>
+    <div class="game-tagline">Guess the professional athlete, based on their initials</div>
+    <div class="copyright-line">&copy; 2026 UVM87 Games. All rights reserved. &middot; <a href="privacy.html" style="color:inherit;">Terms &amp; Privacy</a></div>
+    <div class="eyebrow" style="margin-top:18px;">Choose Your Sport</div>
+    <div class="subtitle">One shared puzzle a day. Same board for everyone.</div>
+    <div class="sport-grid">
+      <button class="sport-btn" data-sport="MLB">
+        <span class="sport-btn-label">MLB<span class="sport-btn-years">Guess players from 1871&ndash;2025</span></span>
+        <span class="tag">Play now</span>
+      </button>
+      <button class="sport-btn" data-sport="NFL">
+        <span class="sport-btn-label">NFL<span class="sport-btn-years">Guess players from 1974&ndash;2026</span></span>
+        <span class="tag">Play now</span>
+      </button>
+      <button class="sport-btn" data-sport="NBA">
+        <span class="sport-btn-label">NBA &amp; WNBA<span class="sport-btn-years">Guess players from 1946&ndash;2026</span></span>
+        <span class="tag">Play now</span>
+      </button>
+      <button class="sport-btn disabled" data-sport="NHL" disabled>NHL <span class="tag">Coming soon</span></button>
+    </div>
+  </div>
+
+  <!-- DAILY INTRO -->
+  <div id="readySetGoOverlay" class="rsg-overlay" style="display:none;">
+    <div id="readySetGoCircle" class="rsg-circle">READY?</div>
+  </div>
+
+  <!-- BOARD -->
+  <div id="screen-board">
+    <div class="grid" id="grid"></div>
+    <div id="guessbar">
+      <div class="selectedInitials" id="selectedInitials">Tap a tile to begin</div>
+      <div id="guessRow">
+        <input type="text" id="guessInput" placeholder="Full name..." disabled />
+        <button id="submitGuess" disabled>Guess</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUMMARY -->
+  <div id="screen-summary" class="card">
+    <div class="eyebrow">Final &middot; <span id="summarySport"></span> &middot; <span id="summaryDate"></span></div>
+    <div class="big" id="finalScore">0.00</div>
+    <div class="subtitle" style="margin-top:2px; margin-bottom:2px;">FINAL SCORE</div>
+    <div class="subtitle" id="correctCountLabel">0/26 correct</div>
+    <textarea id="shareText" rows="4" readonly></textarea>
+    <button class="primary-btn" id="copyBtn">Copy Results to Share</button>
+    <div class="countdown" id="countdownLabel"></div>
+    <button class="ghost-btn" id="backToMainBtn">&larr; Back to Main Menu</button>
+  </div>
+
+<script>
+// Copyright © 2026 UVM87 Games. All rights reserved.
+// Unauthorized reproduction or distribution of this code is prohibited.
+(function(){
+
+  // ============================================================
+  // Seeded randomness — same date always produces the same board
+  // ============================================================
+  function stringSeed(str){
+    let h = 1779033703 ^ str.length;
+    for(let i=0;i<str.length;i++){
+      h = Math.imul(h ^ str.charCodeAt(i), 3432918353);
+      h = (h<<13) | (h>>>19);
+    }
+    return function(){
+      h = Math.imul(h ^ (h>>>16), 2246822507);
+      h = Math.imul(h ^ (h>>>13), 3266489909);
+      h ^= h>>>16;
+      return h>>>0;
+    };
+  }
+  function mulberry32(a){
+    return function(){
+      a |= 0; a = (a + 0x6D2B79F5) | 0;
+      let t = Math.imul(a ^ (a>>>15), 1 | a);
+      t = (t + Math.imul(t ^ (t>>>7), 61 | t)) ^ t;
+      return ((t ^ (t>>>14)) >>> 0) / 4294967296;
+    };
+  }
+  function seededRandomForDate(dateStr){
+    const seedFn = stringSeed(dateStr);
+    return mulberry32(seedFn());
+  }
+  function todayDateStr(){
+    const d = new Date();
+    const y = d.getFullYear();
+    const m = String(d.getMonth()+1).padStart(2,'0');
+    const day = String(d.getDate()).padStart(2,'0');
+    return `${y}-${m}-${day}`;
+  }
+  function puzzleNumberForDate(dateStr){
+    const epoch = new Date('2026-07-01T00:00:00');
+    const d = new Date(dateStr + 'T00:00:00');
+    return Math.max(1, Math.floor((d - epoch) / 86400000) + 1);
+  }
+
+  // ============================================================
+  // One play per day, per browser -- progress is saved locally so
+  // returning later the same day shows the same board/result instead
+  // of letting someone start over.
+  // ============================================================
+  function progressKey(sportKey, dateStr){ return 'lineupcard_' + sportKey.toLowerCase() + '_' + dateStr; }
+  function saveProgress(){
+    try{
+      const data = {
+        score: state.score,
+        endsAt: state.endsAt,
+        ended: state.ended,
+        slots: state.board.map(s => ({ i: s.slotIndex, locked: s.locked, solvedName: s.solvedName || null, pointsEarned: s.pointsEarned || null }))
+      };
+      localStorage.setItem(progressKey(state.sport, state.dateStr), JSON.stringify(data));
+    }catch(e){ /* localStorage may be unavailable (private browsing, etc.) -- fail silently */ }
+  }
+  function loadProgress(sportKey, dateStr){
+    try{
+      const raw = localStorage.getItem(progressKey(sportKey, dateStr));
+      return raw ? JSON.parse(raw) : null;
+    }catch(e){ return null; }
+  }
+
+  const MLB_TEAMS = [
+    "Diamondbacks","Braves","Orioles","Red Sox","Cubs","White Sox","Reds","Guardians",
+    "Rockies","Tigers","Astros","Royals","Angels","Dodgers","Marlins","Brewers",
+    "Twins","Mets","Yankees","Athletics","Phillies","Pirates","Padres","Giants",
+    "Mariners","Cardinals","Rays","Rangers","Blue Jays","Nationals"
+  ];
+  const BASEBALL_TERMS = [
+    "Pitcher","Catcher","First Baseman","Second Baseman","Shortstop",
+    "Third Baseman","Left Fielder","Center Fielder","Right Fielder","Designated Hitter",
+    "Relief Pitcher","Closer","Starter","Bench Player","Pinch Hitter",
+    "Utility Player","Infielder","Outfielder","Bullpen Arm","Setup Man",
+    "Hit","Single","Double","Triple","Home Run",
+    "Grand Slam","Walk","Strikeout","Ground Out","Fly Out",
+    "Line Drive","Pop Fly","Bunting","Stealing Base","Double Play",
+    "Triple Play","Sacrifice Fly","Sacrifice Bunt","Balk","Wild Pitch",
+    "Passed Ball","Error","Foul Ball","Fair Ball","Force Out",
+    "Tag Out","Sliding","Diving","Tagging Up","Baseball Bat",
+    "Glove","Cleats","Uniform","Helmet","Catchers Mask",
+    "Catchers Gear","Chest Protector","Shin Guards","Mitt","Baseball Cap",
+    "Batting Gloves","Pine Tar","Rosin Bag","Diamond","Infield",
+    "Outfield","Warning Track","Foul Territory","Fair Territory","Baseline",
+    "Batters Box","Pitchers Mound","Home Plate","First Base","Second Base",
+    "Third Base","Left Field","Center Field","Right Field","Bleachers",
+    "Grandstand","Dugout","On Deck Circle","Bullpen","Pitchers Circle",
+    "Foul Line","Infield Fly","Dead Ball","Batting Average","On Base Percentage",
+    "Slugging Percentage","OPS","Hits","Runs","RBIs",
+    "Home Runs","Doubles","Triples","Walks","Strikeouts",
+    "Runs Scored","Plate Appearances","At Bats","Stolen Bases","Caught Stealing",
+    "Runs Batted In","Slugger","Gap Hitter","Contact Hitter","Power Hitter",
+    "Speedster","ERA","WHIP","Innings Pitched","Wins",
+    "Losses","Saves","Holds","Fastball","Curveball",
+    "Slider","Changeup","Splitter","Sinker","Cutter",
+    "Knuckleball","Screwball","Spitball","Control","Command",
+    "Velocity","Pitch Count","Strikeout Rate","Fielding Percentage","Assists",
+    "Putouts","Errors","Gold Glove","Defensive Shift","Outfield Assist",
+    "Infield Fly Rule","Catch","Diving Catch","Stolen Bases Prevented","Throwing Accuracy",
+    "Full Count","No Balls","Loaded Bases","Runners in Scoring Position","Bases Empty",
+    "Runner on First","Runner in Scoring Position","Tie Game","Extra Innings","Walk Off",
+    "Blowout","Close Game","Runners","Count","Pitchers Count",
+    "Strike Zone","Called Strike","Swinging Strike","Foul Strike","Catchers Interference",
+    "Batters Interference","Universal DH","Batting Order","Leadoff Hitter","Cleanup Hitter",
+    "Double Switch","Pinch Running","Mound Visit","Pitching Change","Manager Challenge",
+    "Replay Review","Appeal","Hidden Ball Trick","Sign Stealing","Brush Back",
+    "Intentional Walk","Intentional Base on Balls","Pickoff","Pitch Out","Wild Card",
+    "Division Series","League Championship Series","World Series","Pennant Race","MVP",
+    "Cy Young Award","Rookie of the Year","Silver Slugger","All Star","All Star Game",
+    "Hall of Fame","No Hitter","Perfect Game","Shutout","Cycle",
+    "Inside the Park Home Run","Back to Back Home Runs","Inning","Outs","Score",
+    "Scoreboard","Umpire","Home Plate Umpire","Base Umpire","Crew Chief",
+    "Check Swing","Fair Play","Hitters Count","Pitchers Count","Sweet Spot",
+    "Barrel","Launch Angle","Exit Velocity","Spin Rate","Trade Deadline",
+    "Off Season","Spring Training","Summer","Postseason","Pennant",
+    "Flag","Championship","Foul Pole","Chalk","Squeeze Play",
+    "Hit and Run","Stolen Base","Runner"
+  ];
+
+  const BASKETBALL_TERMS = [
+    "Point Guard","Shooting Guard","Small Forward","Power Forward","Center",
+    "Sixth Man","Bench Player","Starter","Reserve","Backup",
+    "Role Player","Veteran","Rookie","All Star","All NBA",
+    "Leader","Floor General","Scorer","Rebounder","Defender",
+    "Shot Blocker","Lockdown Defender","Three Point Specialist","Sniper","Dunker",
+    "Slasher","Post Player","Inside Player","Outside Player","Stretch Four",
+    "Stretch Five","Big Man","Wings","Guard","Ball Handler",
+    "Creator","Play Maker","Dunk","Layup","Bank Shot",
+    "Floater","Three Pointer","Free Throw","Alley Oop","Pick and Roll",
+    "Screen","Assist","Steal","Block","Rebound",
+    "Turnover","Foul","Traveling","Double Dribble","Charging",
+    "Blocking","Pushing","Tripping","Flagrant Foul","Technical Foul",
+    "Ejection","Suspension","Timeout","Challenge","Replay Review",
+    "Deflection","Interception","Fast Break","Transition","Halfcourt Shot",
+    "Buzzer Beater","Game Winner","Clutch Shot","Three Point Play","And One",
+    "Offensive Rebound","Defensive Rebound","Putback","Tip In","Posterize",
+    "Crossover Dribble","Between the Legs","Behind the Back","Spin Move","Driving Lane",
+    "Penetration","Pull Up","Catch and Shoot","Motion Offense","Triangle Offense",
+    "Pick and Pop","Isolation","Post Up","Low Post","High Post",
+    "Mid Range","Paint","Perimeter","Perimeter Shot","Inside Shot",
+    "Pressure Defense","Full Court Press","Half Court Press","Zone Defense","Man to Man Defense",
+    "Double Team","Weak Side","Strong Side","Basketball","Hoop",
+    "Rim","Net","Backboard","Padding","Jersey",
+    "Mouthguard","Goggles","Court","Baseline","Sideline",
+    "Center Court","Center Circle","Tip Off Circle","Free Throw Circle","Free Throw Lane",
+    "Three Point Line","Mid Court","Backcourt","Frontcourt","Charge Circle",
+    "Lane","Key","Wing","Slot","Corner",
+    "Post","Bench","Scorer Table","Announcers Table","Points",
+    "Rebounds","Assists","Steals","Blocks","Fouls",
+    "Field Goals","Field Goal Percentage","Three Pointers","Three Point Percentage","Free Throws",
+    "Free Throw Percentage","Game Score","Steal Percentage","Block Percentage","Rebound Percentage",
+    "Offensive Rating","Defensive Rating","Net Rating","Pace","Scoring Average",
+    "Rebound Average","Assist Average","Plus Minus","Bench Scoring","Bench Points",
+    "Starter Scoring","Consistency","Reliability","Double Double","Triple Double",
+    "Quadruple Double","Five by Five","Palming","Illegal Dribble","Carrying",
+    "Out of Bounds","In Bounds","Personal Foul","Offensive Foul","Defensive Foul",
+    "Charge","Unsportsmanlike Conduct","Lane Violation","Three Second Violation","Five Second Violation",
+    "Eight Second Violation","Backcourt Violation","Over and Back","Defense in the Paint","Illegal Formation",
+    "Touching the Net","Kicking the Ball","Goaltending","Basket Interference","Referee",
+    "Umpire","Crew Chief","Official","Tip Off","Opening Tip",
+    "Jump Ball","Overtime","Double Overtime","Triple Overtime","Regulation",
+    "Halftime","End of Game","End of Period","Quarter","Second Quarter",
+    "Third Quarter","Fourth Quarter","First Half","Second Half","Close Game",
+    "Blowout","Comeback","Lead","Trailing","Tied",
+    "Score","Scoreboard","Possession","Inbound","Throw In",
+    "Last Minute","Final Seconds","Buzzer","Game Tying Shot","Go Ahead",
+    "Momentum","Rhythm","Flow","MVP","Finals MVP",
+    "All Star Selection","All Star Break","All Rookie","Sixth Man Award","Defensive Player of the Year",
+    "Coach of the Year","Most Improved Player","Rookie of the Year","Hall of Fame","Championship",
+    "Title","Trophy","Finals","Playoff Appearance","Playoff Bracket",
+    "Seeding","Record","Streak","Win Streak","Loss Streak",
+    "Perfect Season","Historic","Legacy","Greatest All Time","GOAT",
+    "Play","Play Call","Offensive Play","Defensive Play","Motion",
+    "Flex Offense","Spread Offense","Run and Gun","Pace and Space","Small Ball",
+    "Three Point Heavy","Post Heavy","Superstar","System","Spacing",
+    "Floor Spacing","Ball Movement","Player Movement","Cutting","Setting Screens",
+    "Using Screens","Spacing the Floor","High Low","Low High","Post Entry",
+    "Drive and Kick","Kick Out","Swing","Skip Pass","Entry Pass",
+    "Outlet Pass","Push Tempo","Control Tempo","Defensive Intensity","Box and One",
+    "Diamond","Matchup","Mismatch","Versatility","Length",
+    "Athleticism","Strength","Speed","Agility","Explosiveness",
+    "Footwork","Balance","Release","Arc","Range",
+    "Confidence","Composure","Poise","Leadership","Chemistry",
+    "Cohesion","Sacrifice","Role Playing","Contribution","Effort",
+    "Hustle","Toughness","Grittiness","Competitiveness","Will to Win",
+    "Winning Mentality","Basketball IQ","Court Awareness","Positioning","Anticipation",
+    "Reaction Time","Half Court Set","Set Play","Face Up","Back Down",
+    "Mid Post","Block","Hand Check","Bodying Up","Defending Up",
+    "Defending Down","Help","Help and Recover","Rotation","Switches",
+    "Switch Everything","Pick Your Poison","Exploiting Mismatches","Targeting","Hunting",
+    "Attacking","Aggressive","Passive","Angles","Reads",
+    "Decision Making","Problem Solving","Adjustments","Game","Match",
+    "Contest","Bout","Exhibition","Preseason","Regular Season",
+    "Playoff","Elimination","Tournament","Conference","Division",
+    "Conference Finals","Conference Championship","Playoff Run","Playoff Push","Clinch",
+    "Secured","Playoff Spot","Draft","Trade","Trade Deadline",
+    "Free Agency","Contract","Extension","Resign","Signing",
+    "Sophomore","Junior","Senior","Off Season","Training Camp",
+    "Conditioning","Workouts","Scrimmage","Exhibition Game","Friendly",
+    "Home Game","Away Game","Road Game","Road Trip","Home Stand",
+    "Back to Back","Lakers","Celtics","Warriors","Spurs",
+    "Nets","Mavericks","Trail Blazers","Suns","Bucks",
+    "Grizzlies","Bulls","Nuggets","Pistons","Heat",
+    "Pacers","Clippers","Cavaliers","Raptors","Hawks",
+    "Hornets","Knicks","Magic","Timberwolves","Kings",
+    "Rockets","Jazz","Pelicans","Aces","Liberty",
+    "Mercury","Sparks","Storm","Sky","Sun",
+    "Fever","Dream","Mystics","Wings","Indiana",
+    "Houston","Minnesota","Washington","Chicago","Atlanta",
+    "Connecticut","New York","Phoenix","Los Angeles","Las Vegas",
+    "Seattle","Dallas","New Jersey","Tulsa","Sacramento",
+    "Utah","San Antonio","Miami","Charlotte","Detroit",
+    "Boston","Golden State","Oklahoma","Portland","Denver",
+    "Memphis","Milwaukee","New Orleans","Toronto","Brooklyn",
+    "Mississippi","Virginia","International","League","Association",
+    "Conference","Division","Playoff","Championship","Tournament",
+    "Invitational"
+  ];
+
+  // ============================================================
+  // Sport configuration -- each sport has its own player data file
+  // and its own word pool used to generate the daily second letters.
+  // ============================================================
+  const NFL_TERMS = [
+    "Active roster","Adjustments","Air attack","Analyst","Announcer",
+    "Anticipation","Armband","Arm strength","Assistant","Audible",
+    "Back judge","Backfield","Backup","Ball fake","Ball skills",
+    "Ball security","Ball placement","Ballcarrier","Ballcontrol","Ballgame",
+    "Ballhawk","Banner","Bears","Bench","Bengals",
+    "Bills","Big play","Blindside","Blitz","Block",
+    "Blowout","Bootleg","Booth review","Boundary","Broncos",
+    "Broken tackle","Browns","Buccaneers","Bullet pass","Bust",
+    "Burst","Bye week","Cadence","Camp","Canton",
+    "Captain","Captains","Cardinals","Catch","Ceiling",
+    "Challenge","Challenge flag","Champion","Championship","Chains",
+    "Chain gang","Chargers","Checkdown","Chiefs","Chinstrap",
+    "Chip block","Chop block","Clipping","Clock","Clock management",
+    "Colts","Comeback","Commissioner","Completion","Conditioning",
+    "Conference","Consistency","Contain","Contract","Coordinator",
+    "Cornerback","Counter","Coverage","Coverage sack","Cowboys",
+    "Crowd","Crowd noise","Curl","Cushion","Cutback",
+    "Defensive end","Defensive tackle","Defeat","Deflection","Delay",
+    "Dime","Dive","Division","Divisional","Dolphins",
+    "Double team","Draft","Drag route","Drive","Dump off",
+    "Dynasty","Eagles","Edge rusher","Ejection","Elimination",
+    "Endzone","Encroachment","Extra point","Facemask","Fair catch",
+    "Falcons","False start","Fanbase","Field goal","Field position",
+    "Film","Finale","First down","Flag","Flea flicker",
+    "Floor","Football","Forty Niners","Formation","Franchise tag",
+    "Free agency","Front","Fullback","Fumble","Game clock",
+    "Gamechanger","Gameplan","Gamewinner","Giveaway","Giants",
+    "Gloves","Goal defense","Goal line","Goalpost","Goal stand",
+    "Gold jacket","Go route","Gridiron","Ground game","Guard",
+    "Gunslinger","Halftime","Halftime show","Halfback","Handoff",
+    "Hangtime","Hard count","Hashmarks","Head coach","Helmet",
+    "Highlight","Highlight reel","Hitch","Holder","Holdout",
+    "Hook ladder","Home crowd","Homefield","Homecoming","Horse collar",
+    "Hot route","Hurry offense","Hurry up","Huddle","Hurdle",
+    "Illegal contact","Illegal formation","Illegal motion","Illegal shift","In route",
+    "Incompletion","Inactive","Interception","Interference","Injury",
+    "Ironman","Jaguars","Jersey","Jets","Juke move",
+    "Jump ball","Kick coverage","Kick return","Kickoff","Kicker",
+    "Kneeldown","Lane","Lateral","Leaping catch","Leverage",
+    "Linebacker","Line stunt","Lineman","Lions","Locker room",
+    "Madden","Man coverage","Marker","Mascot","Matchup",
+    "Measurement","Mock draft","Momentum","Mouthguard","MVP",
+    "Neutral zone","Nickel","No huddle","Nose tackle","Offense",
+    "Offensive front","Offensive line","Offside","Officials","Onside kick",
+    "Open field","Open lane","Open receiver","Option","Opener",
+    "Overtime","Owner","Packers","Pancake block","Panthers",
+    "Parade","Pass","Pass breakup","Pass protection","Pass rush",
+    "Passing game","Patriots","Penalty","Personal foul","Pigskin",
+    "Pitch","Play action","Playbook","Playcall","Playmaker",
+    "Playoffs","Pocket","Post route","Postseason","Potential",
+    "Power rankings","Power run","Practice","Practice squad","Pregame",
+    "Prevent","Precision","Prediction","Prospect","Punt",
+    "Punt coverage","Punt return","Pylon","Quarterback","Quarterback sneak",
+    "Raiders","Ravens","Reception","Recap","Recovery",
+    "Red zone","Redshirt","Referee","Rebuild","Replay",
+    "Replay booth","Returner","Reverse","Review","Rival",
+    "Rivalry","Rivalries","Road game","Rookie","Roughing",
+    "Runner-up","Running back","Run blocking","Run defense","Run game",
+    "Safety","Sack","Saints","Schedule","Scheme",
+    "Scout","Scout team","Scouting","Scouting report","Screen",
+    "Scramble","Seahawks","Season","Season ticket","Secondary",
+    "Seeding","Seam","Separation","Series","Shift",
+    "Shotgun","Short yardage","Sideline","Sideline catch","Silent count",
+    "Slot receiver","Sleeper","Slant","Snap","Special teams",
+    "Spike","Spin move","Spiral","Spot","Steelers",
+    "Starter","Stadium","Standings","Statue play","Stiff arm",
+    "Streak","Strategy","Stretch","Stretch run","Strip sack",
+    "Stunt","Sweep","Super Bowl","Tackling","Tailgate",
+    "Tailgating","Tackle","Team captain","Tempo","Texans",
+    "Throw","Tight end","Ticket","Tie","Timeout",
+    "Timing","Titans","Toe tap","Touchback","Touchdown",
+    "Trade","Trenches","Trick play","Turf","Umpire",
+    "Underdog","Undrafted","Unsportsmanlike","Upset","Veteran",
+    "Victory","Victory formation","Vikings","Visiting team","Waivers",
+    "Walkthrough","Warmups","Whistle","Wild card","Wildcat",
+    "Yardage","Yards","Zone","Zone blitz"
+  ];
+
+  const SPORTS = {
+    MLB: {
+      dataFile: 'athletes-mlb.js',
+      eyebrowLabel: 'MLB &middot; Daily Duograms',
+      topbarLabel: 'MLB',
+      wordPool: () => [...MLB_TEAMS, ...BASEBALL_TERMS]
+    },
+    NBA: {
+      dataFile: 'athletes-nba.js',
+      eyebrowLabel: 'NBA &amp; WNBA &middot; Daily Duograms',
+      topbarLabel: 'NBA & WNBA',
+      wordPool: () => [...BASKETBALL_TERMS]
+    },
+    NFL: {
+      dataFile: 'athletes-nfl.js',
+      eyebrowLabel: 'NFL &middot; Daily Duograms',
+      topbarLabel: 'NFL',
+      wordPool: () => [...NFL_TERMS]
+    }
+  };
+
+  function shuffledPoolSeeded(rand, pool){
+    const arr = [...pool];
+    for(let i=arr.length-1;i>0;i--){
+      const j = Math.floor(rand()*(i+1));
+      [arr[i],arr[j]] = [arr[j],arr[i]];
+    }
+    return arr;
+  }
+  function buildLetterStreamForDate(dateStr, pool){
+    const rand = seededRandomForDate(dateStr);
+    return shuffledPoolSeeded(rand, pool).map(n=>n.toUpperCase().replace(/[^A-Z]/g,'')).join('');
+  }
+  function buildBoardForDate(dateStr, sportKey){
+    const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+    const pool = SPORTS[sportKey].wordPool();
+    const stream = buildLetterStreamForDate(dateStr, pool);
+    return letters.map((L,i)=>({ slotIndex:i, initials2: L + (stream[i]||'?'), locked:false, solvedName:null, pointsEarned:null }));
+  }
+
+  // ============================================================
+  // Athlete matching (same normalization logic as the original server)
+  // ============================================================
+  function normalizeName(s){
+    return s.toString().normalize("NFD").replace(/\p{Diacritic}/gu, "")
+      .toLowerCase().trim().replace(/[^a-z0-9\s]/g," ").replace(/\s+/g," ").trim();
+  }
+  function computeInitials2(fullName){
+    const parts = fullName.trim().split(/\s+/);
+    const first = parts[0] || "";
+    const last = parts[parts.length-1] || "";
+    const stripAccent = (ch) => ch.normalize("NFD").replace(/\p{Diacritic}/gu, "");
+    const firstLetter = stripAccent(first[0]||"").toUpperCase();
+    const lastLetter = stripAccent(last[0]||"").toUpperCase();
+    return firstLetter + lastLetter;
+  }
+  let normalizedNameToAthletes = new Map();
+  let validCombos = new Set();
+  let comboCounts = new Map();
+  // Rebuilds all athlete-derived lookups from whatever the current global
+  // `athletes` array is. Called after each sport's data file finishes loading.
+  function buildAthleteIndexes(){
+    normalizedNameToAthletes = new Map();
+    comboCounts = new Map();
+    (athletes || []).forEach(a=>{
+      const norm = normalizeName(a.fullName);
+      const initials2 = computeInitials2(a.fullName);
+      const arr = normalizedNameToAthletes.get(norm) || [];
+      arr.push({ fullName:a.fullName, initials2, lastYear: (typeof a.lastYear === 'number') ? a.lastYear : null });
+      normalizedNameToAthletes.set(norm, arr);
+      comboCounts.set(initials2, (comboCounts.get(initials2) || 0) + 1);
+    });
+    // Set of every two-letter initials combo that has at least one real player,
+    // used at end-of-game to flag slots that have no possible correct answer.
+    validCombos = new Set((athletes || []).map(a => computeInitials2(a.fullName)));
+  }
+  function findMatch(guessText, targetInitials2){
+    const ng = normalizeName(guessText || "");
+    const candidates = normalizedNameToAthletes.get(ng) || [];
+    return candidates.find(c => c.initials2 === targetInitials2) || null;
+  }
+
+  // ============================================================
+  // Scoring: rarer initial combos are worth more points. A correct
+  // guess earns (100 / number of real players with that combo),
+  // rounded UP to 2 decimal places -- so a combo with only 1 possible
+  // answer is worth 100.00 points, while a combo with 300 possible
+  // answers (like JS) is worth only 0.34.
+  // ============================================================
+  function pointsForCombo(combo){
+    const n = comboCounts.get(combo) || 1;
+    const raw = (1 / n) * 100;
+    return Math.ceil(raw * 100) / 100; // round UP to 2 decimal places
+  }
+
+  // ============================================================
+  // Bonus for naming older players, based on the last year they
+  // were active:
+  //   2000–present   -> no bonus
+  //   1950–1999      -> +5%
+  //   1900–1949      -> +10%
+  //   before 1900    -> +15%
+  // ============================================================
+  function bonusMultiplierForYear(lastYear){
+    if(typeof lastYear !== 'number') return 1.0;
+    if(lastYear >= 2000) return 1.0;
+    if(lastYear >= 1950) return 1.05;
+    if(lastYear >= 1900) return 1.10;
+    return 1.15;
+  }
+  function applyAgeBonus(basePoints, lastYear){
+    const withBonus = basePoints * bonusMultiplierForYear(lastYear);
+    return Math.ceil(withBonus * 100) / 100; // round UP to 2 decimal places
+  }
+
+  // ============================================================
+  // Game state
+  // ============================================================
+  const RUN_SECONDS = 10*60;
+  let state = {
+    sport: null,
+    dateStr: null,
+    board: [],
+    score: 0,
+    endsAt: null,
+    selectedSlot: null,
+    timerHandle: null,
+    ended: false,
+    preGame: false
+  };
+
+  // Tracks which sport's data file is currently loaded into the page, so we
+  // don't reload the same script unnecessarily, and so switching sports
+  // always loads the correct one before building indexes from it.
+  let loadedSportDataFile = null;
+  function loadSportData(sportKey, callback){
+    const sport = SPORTS[sportKey];
+    if(loadedSportDataFile === sport.dataFile){
+      callback();
+      return;
+    }
+    const script = document.createElement('script');
+    script.src = sport.dataFile;
+    script.onload = function(){
+      loadedSportDataFile = sport.dataFile;
+      buildAthleteIndexes();
+      callback();
+    };
+    script.onerror = function(){
+      alert('Could not load player data for this sport. Please check your connection and try again.');
+    };
+    document.body.appendChild(script);
+  }
+
+  // ---- sport select ----
+  document.querySelectorAll('.sport-btn:not(.disabled)').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const sportKey = btn.dataset.sport;
+      if(SPORTS[sportKey]){
+        state.sport = sportKey;
+        loadSportData(sportKey, beginSportFlow);
+      }
+    });
+  });
+
+  // Sends a Google Analytics event if gtag is available; fails silently
+  // otherwise (e.g. if an ad blocker or privacy setting blocked it) so
+  // analytics can never break actual gameplay.
+  function trackEvent(name, params){
+    try{
+      if(typeof gtag === 'function'){
+        gtag('event', name, params || {});
+      }
+    }catch(e){ /* never let analytics break the game */ }
+  }
+
+  // Plays the red/yellow/green "READY? SET? GO!" countdown, then calls
+  // onComplete. Used only for genuinely fresh puzzle starts -- resuming or
+  // viewing past results skips straight to the board with no countdown.
+  function showReadySetGo(onComplete){
+    const overlay = document.getElementById('readySetGoOverlay');
+    const circle = document.getElementById('readySetGoCircle');
+    const phases = [
+      { text: 'READY?', color: '#B0332A', duration: 2000 },
+      { text: 'SET?',   color: '#E0A73B', duration: 2000 },
+      { text: 'GO!',    color: '#2E6B3E', duration: 1000 }
+    ];
+    overlay.style.display = 'flex';
+    let i = 0;
+    function nextPhase(){
+      if(i >= phases.length){
+        overlay.style.display = 'none';
+        onComplete();
+        return;
+      }
+      const p = phases[i];
+      circle.textContent = p.text;
+      circle.style.background = p.color;
+      i++;
+      setTimeout(nextPhase, p.duration);
+    }
+    nextPhase();
+  }
+
+  // Runs once a sport's player data has finished loading. Goes straight to
+  // the board -- no separate intro screen -- routing directly to results,
+  // a resumed run, or a fresh countdown-then-start, based on saved progress.
+  function beginSportFlow(){
+    const dateStr = todayDateStr();
+    state.dateStr = dateStr;
+    document.getElementById('screen-sport').style.display = 'none';
+
+    state.board = buildBoardForDate(dateStr, state.sport);
+    state.score = 0;
+    state.ended = false;
+    state.preGame = false;
+
+    const saved = loadProgress(state.sport, dateStr);
+    if(saved){
+      saved.slots.forEach(s=>{
+        if(state.board[s.i]){
+          state.board[s.i].locked = s.locked;
+          state.board[s.i].solvedName = s.solvedName;
+          state.board[s.i].pointsEarned = s.pointsEarned;
+        }
+      });
+      state.score = saved.score;
+      state.endsAt = saved.endsAt;
+      enterBoardScreen();
+      restoreSolvedVisuals();
+      if(saved.ended){
+        document.getElementById('timerNum').textContent = '0:00';
+        trackEvent('puzzle_viewed_results', { sport: state.sport, puzzle_number: puzzleNumberForDate(dateStr) });
+        endRun(); // finalizes the board (marks unsolvable slots, shows summary) without restarting the timer
+      } else {
+        trackEvent('puzzle_resumed', { sport: state.sport, puzzle_number: puzzleNumberForDate(dateStr) });
+        startTimer(); // resumes the original countdown; if time already lapsed, this auto-ends the run
+      }
+      return;
+    }
+
+    // Fresh start: show the board (locked behind the countdown) first, so
+    // the Ready/Set/Go overlay sits on top of it rather than a blank screen.
+    state.preGame = true;
+    enterBoardScreen();
+    showReadySetGo(()=>{
+      state.preGame = false;
+      state.endsAt = Date.now() + RUN_SECONDS*1000;
+      saveProgress();
+      trackEvent('puzzle_started', { sport: state.sport, puzzle_number: puzzleNumberForDate(dateStr) });
+      startTimer();
+    });
+  }
+
+  function restoreSolvedVisuals(){
+    state.board.forEach(slot=>{
+      if(!slot.locked) return;
+      const el = tileEl(slot.slotIndex);
+      if(el && !el.classList.contains('solved')){
+        el.classList.add('solved');
+        const pts = (typeof slot.pointsEarned === 'number') ? slot.pointsEarned : 0;
+        el.insertAdjacentHTML('beforeend',
+          '<span class="solvedName">'+escapeHtml(slot.solvedName||'')+'</span>'+
+          '<span class="pointsEarned">+'+pts.toFixed(2)+'</span>'+
+          checkmarkSvg()
+        );
+      }
+    });
+  }
+
+  function enterBoardScreen(){
+    document.getElementById('screen-board').style.display = 'block';
+    document.getElementById('board-header').style.display = 'flex';
+    document.getElementById('topbar').style.display = 'flex';
+    document.getElementById('topbarSport').textContent = SPORTS[state.sport].topbarLabel;
+    document.getElementById('topbarPuzzleNum').textContent = 'Puzzle #' + puzzleNumberForDate(state.dateStr);
+    renderGrid();
+    updateHeader();
+  }
+
+  function renderGrid(){
+    const grid = document.getElementById('grid');
+    grid.innerHTML = '';
+    state.board.forEach(slot=>{
+      const el = document.createElement('div');
+      el.className = 'tile';
+      el.dataset.slot = slot.slotIndex;
+      el.innerHTML = '<span class="idx">'+(slot.slotIndex+1)+'</span><span class="letters">'+slot.initials2+'</span>';
+      el.addEventListener('click', ()=>selectTile(slot.slotIndex));
+      grid.appendChild(el);
+    });
+  }
+  function tileEl(i){ return document.querySelector('.tile[data-slot="'+i+'"]'); }
+
+  function selectTile(slotIndex){
+    if(state.ended || state.preGame) return;
+    const slot = state.board[slotIndex];
+    if(slot.locked) return;
+    state.selectedSlot = slotIndex;
+    document.querySelectorAll('.tile').forEach(t=>t.classList.remove('selected'));
+    tileEl(slotIndex).classList.add('selected');
+    document.getElementById('selectedInitials').textContent = 'Initials: ' + slot.initials2;
+    const input = document.getElementById('guessInput');
+    input.disabled = false; input.value=''; input.focus();
+    document.getElementById('submitGuess').disabled = false;
+  }
+
+  const CORRECT_MESSAGES = [
+    "Correct! Nailed it!", "Yes! You got it!", "Bingo!", "That's right!", "You nailed it!",
+    "Spot on!", "Boom! Correct!", "You got it!", "Right on the money!", "Ding ding ding — correct!",
+    "Home run!", "Touchdown!", "Slam dunk!", "Nothing but net!", "Hole in one!",
+    "Goal!", "Grand slam!", "Perfect strike!", "That's a bullseye!", "Ace!",
+    "Survey says... correct!", "Ding! That's the answer!", "And the crowd goes wild!", "That's our final answer — and it's right!", "You've got the golden buzzer!",
+    "Correct! Come on down!", "That's a match!", "The board lights up — correct!", "Ladies and gentlemen, we have a winner!", "Jackpot!",
+    "Woohoo! Correct!", "Yippee! You got it!", "Correcto-mundo!", "That's a big fat yes!", "Ka-ching! Right answer!",
+    "Whoop whoop, correct!", "Yasss! Nailed it!", "Zing! Right on!", "Ta-da! Correct!", "Booyah! You got it!",
+    "Great job — that's correct!", "You're on fire!", "Smart guess — and right!", "You really know your stuff!", "Nice work! Correct!",
+    "You're crushing it!", "Well done — that's it!", "Look at you go!", "You've got this!", "Impressive! Correct!",
+    "Plot twist — you're right!", "The universe agrees — correct!", "Achievement unlocked!", "Correct! The crowd gasps in awe.", "That answer just leveled up!",
+    "Success loading... complete!", "Error 200: Answer verified correct.", "A wild correct answer appeared!", "That's a green checkmark for you!", "Winner winner!",
+    "Look who's a genius!", "Well aren't you clever!", "Confidently correct!", "Show-off. (In a good way.)", "Okay, Einstein!",
+    "You really came to play, huh?", "That's what I call a guess!", "Somebody's been paying attention!", "Correct — flex a little!", "Not bad, not bad at all!",
+    "Correct!", "That's right!", "Yes, that's it!", "Right answer!", "Confirmed correct!",
+    "That matches!", "You got the answer!", "Correct guess!", "That's a win!", "Right you are!",
+    "Woo! Correct!", "Yowza, you got it!", "Yes yes yes!", "Cha-ching!", "Huzzah!",
+    "Eureka!", "Score!", "Nailed it!", "Heck yeah!", "Sweet victory!",
+    "Correct! You're on a roll!", "Nailed it — keep the streak going!", "Right again! You're unstoppable!", "Correct! Champions guess like that!", "That's a win — onward to the next!",
+    "Yes! You're really cooking now!", "Correct! The streak lives on!", "Right on target — keep it up!", "Correct! You make this look easy!", "Victory! Bring on the next round!"
+  ];
+
+  const INCORRECT_MESSAGES = [
+    "Nope! Give it another shot.", "Not quite — try again!", "Swing and a miss!", "So close (not really). Try again!", "Nice guess, but no.",
+    "Wrong answer, right attitude!", "Not this time, champ.", "Close, but no cigar.", "Whiffed on that one!", "Not it — have another go.",
+    "Strike one! Try again.", "That's a foul ball. Swing again!", "Air ball! Take another shot.", "Offside! Try again.", "Fumble! Give it another go.",
+    "That one's out of bounds.", "Wide right! Try again.", "Traveling violation — try again.", "Called strike. Batter up again!", "That's a turnover. Try again!",
+    "Nope, nope, nopity nope!", "Wrongo, bongo — try again!", "Not even close (kidding, try again)!", "Uh-oh, wrong-o!", "That's a big ol' nope.",
+    "Bzzzt! Wrong answer.", "Whoopsie! Not quite.", "Nada, zilch, zero. Try again!", "That guess just got rejected.", "Nope-tastic! Try again.",
+    "Not quite, but you're getting warmer!", "Keep guessing — you've got this!", "Wrong, but don't give up!", "Almost! Give it another try.", "Not this one — next guess is the charm!",
+    "Try again, you're closer than you think!", "Miss! But hey, that's how you learn.", "Not it, but good effort!", "Wrong guess, right spirit!", "Shake it off and try again!",
+    "A wild wrong answer appeared!", "That answer just got voted off the island.", "Error 404: Correct answer not found.", "Plot twist — that's wrong!", "Denied! Try again.",
+    "That's a hard pass. Try again!", "Nice try, but the universe says no.", "Wrong! The crowd gasps.", "Not the one, but keep at it!", "That guess has left the building.",
+    "Ohhh, I'm sorry, that's incorrect!", "The judges say... nope!", "Sorry, that's not our final answer!", "Wrong! But you still get to spin again.", "Buzzer sound! Try again.",
+    "That's not what's on the board!", "Incorrect! Better luck this round.", "Survey says... X! Try again.", "Nice guess, but the vault stays locked.", "Wrong! Next contestant... which is still you!",
+    "Bold guess. Wrong guess.", "That's adorable, but no.", "Confidently incorrect! Try again.", "Well, you tried.", "Nope! But A for effort.",
+    "That answer said \"trust me\" and lied.", "Wrong, but I admire the audacity.", "Not even in the neighborhood!", "That guess needs a GPS.", "Swing again, slugger!",
+    "Incorrect — try again!", "Not correct. One more try!", "Wrong guess. Go again!", "That's not it. Try once more!", "Miss! Try again.",
+    "Not right — another guess?", "Incorrect answer. Keep going!", "That didn't match. Try again!", "Not the answer — try again!", "Wrong! One more attempt.",
+    "Kaboom! Wrong answer.", "Yikes! Not quite.", "Oof, nope!", "Zoinks! Wrong guess.", "Yowza, that's a miss!",
+    "Whomp whomp — wrong!", "Eek! Not it.", "Ruh-roh, try again!", "Ope! Wrong one.", "Welp, that's a no.",
+    "Wrong, but champions keep guessing!", "Not it — but you'll nail the next one!", "Miss! Time to regroup and guess again.", "Incorrect, but persistence pays off!", "That's a no — shake it off, try again!",
+    "Wrong answer, winning attitude!", "Not quite — every guess gets you closer!", "Miss! But you're just warming up.", "Nope! Onward to the next guess!", "Wrong, but the comeback is coming!"
+  ];
+
+  let lastCorrectMessage = null;
+  function pickCorrectMessage(){
+    let msg;
+    do{ msg = CORRECT_MESSAGES[Math.floor(Math.random()*CORRECT_MESSAGES.length)]; }
+    while(msg === lastCorrectMessage && CORRECT_MESSAGES.length > 1);
+    lastCorrectMessage = msg;
+    return msg;
+  }
+  let lastIncorrectMessage = null;
+  function pickIncorrectMessage(){
+    let msg;
+    do{ msg = INCORRECT_MESSAGES[Math.floor(Math.random()*INCORRECT_MESSAGES.length)]; }
+    while(msg === lastIncorrectMessage && INCORRECT_MESSAGES.length > 1);
+    lastIncorrectMessage = msg;
+    return msg;
+  }
+
+  let toastTimeoutHandle = null;
+  function showToast(text, type){
+    const el = document.getElementById('toastBanner');
+    clearTimeout(toastTimeoutHandle);
+    el.textContent = text;
+    el.className = type + ' show';
+    toastTimeoutHandle = setTimeout(()=>{
+      el.classList.remove('show');
+    }, 1500);
+  }
+
+  function submitGuess(){
+    if(state.ended) return;
+    if(state.selectedSlot === null) return;
+    const text = document.getElementById('guessInput').value.trim();
+    if(!text) return;
+    const slot = state.board[state.selectedSlot];
+    const match = findMatch(text, slot.initials2);
+    const el = tileEl(state.selectedSlot);
+    if(match){
+      slot.locked = true;
+      slot.solvedName = match.fullName;
+      const basePts = pointsForCombo(slot.initials2);
+      const pts = applyAgeBonus(basePts, match.lastYear);
+      slot.pointsEarned = pts;
+      state.score += pts;
+      el.classList.add('solved');
+      el.insertAdjacentHTML('beforeend',
+        '<span class="solvedName">'+escapeHtml(match.fullName)+'</span>'+
+        '<span class="pointsEarned">+'+pts.toFixed(2)+'</span>'+
+        checkmarkSvg()
+      );
+      showToast(pickCorrectMessage(), 'correct');
+      saveProgress();
+      advanceToNextTile(state.selectedSlot);
+    } else {
+      el.classList.add('shake');
+      setTimeout(()=>el.classList.remove('shake'), 350);
+      showToast(pickIncorrectMessage(), 'incorrect');
+      document.getElementById('guessInput').value = '';
+      document.getElementById('guessInput').focus();
+    }
+    updateHeader();
+  }
+  document.getElementById('submitGuess').addEventListener('click', submitGuess);
+  document.getElementById('guessInput').addEventListener('keydown', e=>{ if(e.key==='Enter') submitGuess(); });
+
+  function escapeHtml(str){ const d=document.createElement('div'); d.textContent=str; return d.innerHTML; }
+  function checkmarkSvg(){ return '<svg class="stitch" viewBox="0 0 100 100"><path d="M20,55 L42,75 L82,25"/></svg>'; }
+
+  function advanceToNextTile(fromIndex){
+    const next = state.board.find((s,i)=> i>fromIndex && !s.locked);
+    const wrap = next || state.board.find(s=>!s.locked);
+    if(wrap){
+      selectTile(wrap.slotIndex);
+    } else {
+      document.getElementById('selectedInitials').textContent = 'Lineup complete!';
+      document.getElementById('guessInput').disabled = true;
+      document.getElementById('submitGuess').disabled = true;
+      endRun();
+    }
+  }
+
+  function updateHeader(){
+    document.getElementById('scoreNum').textContent = state.score.toFixed(2);
+    const solvedCount = state.board.filter(s=>s.locked).length;
+    document.getElementById('solvedNum').textContent = solvedCount + '/26';
+  }
+
+  function startTimer(){
+    clearInterval(state.timerHandle);
+    state.timerHandle = setInterval(()=>{
+      const remainingMs = state.endsAt - Date.now();
+      if(remainingMs <= 0){
+        clearInterval(state.timerHandle);
+        document.getElementById('timerNum').textContent = '0:00';
+        endRun();
+        return;
+      }
+      const totalSec = Math.floor(remainingMs/1000);
+      const m = Math.floor(totalSec/60);
+      const s = totalSec % 60;
+      const timerEl = document.getElementById('timerNum');
+      timerEl.textContent = m + ':' + String(s).padStart(2,'0');
+      timerEl.classList.toggle('low', totalSec<=30);
+    }, 250);
+  }
+
+  function endRun(){
+    if(state.ended) return;
+    state.ended = true;
+    clearInterval(state.timerHandle);
+
+    // Lock guessing but keep the board visible with correct answers shown.
+    document.querySelectorAll('.tile').forEach(t=>t.classList.remove('selected'));
+    const allSolved = state.board.every(s => s.locked);
+    document.getElementById('selectedInitials').textContent = allSolved
+      ? 'Lineup complete — nice work!'
+      : 'Time\'s up — here\'s your final board';
+    const input = document.getElementById('guessInput');
+    input.disabled = true; input.value = '';
+    document.getElementById('submitGuess').disabled = true;
+
+    // For any slot the player didn't solve, check whether it was ever
+    // solvable at all -- flag it clearly rather than leaving it looking
+    // like a missed answer.
+    state.board.forEach(slot => {
+      if(slot.locked) return;
+      if(!validCombos.has(slot.initials2)){
+        const el = tileEl(slot.slotIndex);
+        if(el){
+          el.classList.add('unsolvable');
+          el.insertAdjacentHTML('beforeend', '<span class="unsolvableNote">No player with these initials</span>');
+        }
+      }
+    });
+
+    const correctCount = state.board.filter(s => s.locked).length;
+    document.getElementById('finalScore').textContent = state.score.toFixed(2);
+    document.getElementById('correctCountLabel').textContent = correctCount + '/26 correct';
+
+    trackEvent('puzzle_finished', {
+      sport: state.sport,
+      puzzle_number: puzzleNumberForDate(state.dateStr),
+      score: state.score,
+      correct_count: correctCount,
+      completed_all: allSolved
+    });
+
+    const sportLabel = SPORTS[state.sport].topbarLabel;
+    document.getElementById('summarySport').textContent = sportLabel;
+
+    const d = new Date(state.dateStr + 'T00:00:00');
+    document.getElementById('summaryDate').textContent = d.toLocaleDateString(undefined, { month:'short', day:'numeric' });
+
+    const grid = state.board.map(s => s.locked ? '🟩' : (validCombos.has(s.initials2) ? '⬜' : '🟨')).join('');
+    const shareText = `Daily Duograms ${sportLabel} #${puzzleNumberForDate(state.dateStr)} — Score: ${state.score.toFixed(2)} (${correctCount}/26)\n${grid}`;
+    document.getElementById('shareText').value = shareText;
+
+    // countdown to next puzzle (local midnight)
+    const now = new Date();
+    const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate()+1, 0,0,0);
+    const msLeft = midnight - now;
+    const hrs = Math.floor(msLeft/3600000);
+    const mins = Math.floor((msLeft%3600000)/60000);
+    document.getElementById('countdownLabel').textContent = `Next puzzle in ${hrs}h ${mins}m`;
+
+    // Place the score banner above the board (rather than replacing it) so
+    // players can still see which initials they got right, with names shown.
+    const summaryEl = document.getElementById('screen-summary');
+    const boardHeaderEl = document.getElementById('board-header');
+    boardHeaderEl.parentNode.insertBefore(summaryEl, boardHeaderEl);
+    summaryEl.style.display = 'block';
+
+    saveProgress();
+  }
+
+  document.getElementById('copyBtn').addEventListener('click', ()=>{
+    const ta = document.getElementById('shareText');
+    ta.select();
+    document.execCommand('copy');
+    const btn = document.getElementById('copyBtn');
+    const original = btn.textContent;
+    btn.textContent = 'Copied!';
+    setTimeout(()=>{ btn.textContent = original; }, 1500);
+  });
+
+  document.getElementById('backToMainBtn').addEventListener('click', ()=>{
+    document.getElementById('screen-summary').style.display = 'none';
+    document.getElementById('screen-board').style.display = 'none';
+    document.getElementById('board-header').style.display = 'none';
+    document.getElementById('topbar').style.display = 'none';
+    document.getElementById('screen-sport').style.display = 'block';
+  });
+
+})();
+</script>
+</body>
+</html>
