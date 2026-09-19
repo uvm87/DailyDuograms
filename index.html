@@ -841,7 +841,7 @@
       const norm = normalizeName(a.fullName);
       const initials2 = computeInitials2(a.fullName);
       const arr = normalizedNameToAthletes.get(norm) || [];
-      arr.push({ fullName:a.fullName, initials2, lastYear: (typeof a.lastYear === 'number') ? a.lastYear : null });
+      arr.push({ fullName:a.fullName, initials2, lastYear: (typeof a.lastYear === 'number') ? a.lastYear : null, negroLeagues: a.negroLeagues === true });
       normalizedNameToAthletes.set(norm, arr);
       comboCounts.set(initials2, (comboCounts.get(initials2) || 0) + 1);
     });
@@ -876,15 +876,18 @@
   //   1900–1949      -> +10%
   //   before 1900    -> +15%
   // ============================================================
-  function bonusMultiplierForYear(lastYear){
+  // Exception: players flagged negroLeagues (never played in the major
+  // leagues) always get +10%, regardless of year.
+  function bonusMultiplierForYear(lastYear, negroLeagues){
+    if(negroLeagues === true) return 1.10;
     if(typeof lastYear !== 'number') return 1.0;
     if(lastYear >= 2000) return 1.0;
     if(lastYear >= 1950) return 1.05;
     if(lastYear >= 1900) return 1.10;
     return 1.15;
   }
-  function applyAgeBonus(basePoints, lastYear){
-    const withBonus = basePoints * bonusMultiplierForYear(lastYear);
+  function applyAgeBonus(basePoints, lastYear, negroLeagues){
+    const withBonus = basePoints * bonusMultiplierForYear(lastYear, negroLeagues);
     return Math.ceil(withBonus * 100) / 100; // round UP to 2 decimal places
   }
 
@@ -1166,7 +1169,7 @@
       slot.locked = true;
       slot.solvedName = match.fullName;
       const basePts = pointsForCombo(slot.initials2);
-      const pts = applyAgeBonus(basePts, match.lastYear);
+      const pts = applyAgeBonus(basePts, match.lastYear, match.negroLeagues);
       slot.pointsEarned = pts;
       state.score += pts;
       el.classList.add('solved');
