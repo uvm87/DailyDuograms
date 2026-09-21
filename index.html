@@ -108,6 +108,15 @@
     text-align:center;
     margin-bottom:6px;
   }
+  .data-credit{
+    font-size:11px;
+    line-height:1.45;
+    color:#6b6656;
+    text-align:center;
+    margin-top:18px;
+    padding-top:12px;
+    border-top:1px solid var(--chalk-line);
+  }
   .game-tagline{
     font-size:18px;
     font-family:var(--font-body);
@@ -431,7 +440,13 @@
         <span class="sport-btn-label">NBA &amp; WNBA<span class="sport-btn-years">Guess players from 1946&ndash;2026</span></span>
         <span class="tag">Play now</span>
       </button>
-      <button class="sport-btn disabled" data-sport="NHL" disabled>NHL <span class="tag">Coming soon</span></button>
+      <button class="sport-btn" data-sport="NHL">
+        <span class="sport-btn-label">NHL<span class="sport-btn-years">Guess players from 1917&ndash;2026</span></span>
+        <span class="tag">Play now</span>
+      </button>
+    </div>
+    <div class="data-credit">
+      NHL data: The information used herein was obtained free of charge from and is copyrighted by the Hockey Databank project. For more information about the Hockey Databank project please visit <a href="http://sports.groups.yahoo.com/group/hockey-databank" style="color:inherit;">http://sports.groups.yahoo.com/group/hockey-databank</a>. NHL seasons from 2018&ndash;19 on: <a href="https://github.com/sportsdataverse/fastRhockey-nhl-data" style="color:inherit;">sportsdataverse</a>.
     </div>
   </div>
 
@@ -773,6 +788,78 @@
     "Yardage","Yards","Zone","Zone blitz"
   ];
 
+  const NHL_TEAMS = [
+    "Ducks","Bruins","Sabres","Flames","Hurricanes",
+    "Blackhawks","Avalanche","Blue Jackets","Stars","Red Wings",
+    "Oilers","Panthers","Kings","Wild","Canadiens",
+    "Predators","Devils","Islanders","Rangers","Senators",
+    "Flyers","Penguins","Sharks","Kraken","Blues",
+    "Lightning","Maple Leafs","Mammoth","Canucks","Golden Knights",
+    "Capitals","Jets"
+  ];
+  const HOCKEY_TERMS = [
+    "Center","Left Wing","Right Wing","Winger","Defenseman",
+    "Goaltender","Goalie","Netminder","Captain","Alternate Captain",
+    "Rookie","Veteran","Enforcer","Grinder","Sniper",
+    "Playmaker","Power Forward","Two-Way Forward","Stay-at-Home Defenseman","Offensive Defenseman",
+    "Puck-Moving Defenseman","Backup Goalie","Starting Goalie","Depth Forward","Fourth Liner",
+    "Checking Line","Top Line","First Line","Second Line","Third Line",
+    "Fourth Line","Defensive Pairing","Top Pairing","Power Play Unit","Penalty Killer",
+    "Faceoff Specialist","Team Captain","Assistant Coach","Head Coach","General Manager",
+    "Trainer","Equipment Manager","Referee","Linesman","Goal Judge",
+    "Scorekeeper","Broadcaster","Analyst","Blue Line","Red Line",
+    "Goal Line","Crease","Slot","Boards","Glass",
+    "Neutral Zone","Offensive Zone","Defensive Zone","Faceoff Circle","Faceoff Dot",
+    "Trapezoid","Corner","Point","Bench","Penalty Box",
+    "Zamboni","Net","Crossbar","Goalpost","Puck",
+    "Stick","Skates","Helmet","Visor","Gloves",
+    "Shin Guards","Shoulder Pads","Elbow Pads","Blocker","Trapper",
+    "Goalie Mask","Jersey","Sweater","Stick Tape","Blade",
+    "Shaft","Curve","Mouthguard","Neck Guard","Ice Surface",
+    "Rink","Arena","Scoreboard","Goal Horn","Locker Room",
+    "Slap Shot","Wrist Shot","Snap Shot","Backhand","One-Timer",
+    "Deflection","Tip-In","Rebound","Breakaway","Odd-Man Rush",
+    "Two-on-One","Three-on-Two","Forecheck","Backcheck","Neutral Zone Trap",
+    "Dump and Chase","Dump In","Cycle","Screen","Body Check",
+    "Hip Check","Poke Check","Stick Check","Board Battle","Puck Battle",
+    "Saucer Pass","Breakout","Zone Entry","Faceoff Win","Hat Trick",
+    "Natural Hat Trick","Gordie Howe Hat Trick","Shutout","Empty Net","Extra Attacker",
+    "Pulled Goalie","Penalty Shot","Shootout","Overtime","Sudden Death",
+    "Power Play","Penalty Kill","Short-Handed","Four-on-Four","Three-on-Three",
+    "Delayed Penalty","Line Change","Change on the Fly","Drop Pass","Give and Go",
+    "Toe Drag","Deke","Spin-o-Rama","Shot Block","Glove Save",
+    "Blocker Save","Pad Save","Butterfly","Desperation Save","Top Shelf",
+    "Five Hole","Bar Down","Twig","Snipe","Dangle",
+    "Biscuit","Icing","Offside","Too Many Men","Hooking",
+    "Slashing","Tripping","Cross-Checking","Roughing","Holding",
+    "Interference","High-Sticking","Boarding","Charging","Elbowing",
+    "Kneeing","Fighting","Misconduct","Game Misconduct","Match Penalty",
+    "Delay of Game","Goaltender Interference","Hand Pass","Puck Over Glass","Unsportsmanlike Conduct",
+    "Diving","Embellishment","Spearing","Butt-Ending","Clipping",
+    "Coincidental Minors","Major Penalty","Minor Penalty","Double Minor","Video Review",
+    "Coach's Challenge","Stanley Cup","Stanley Cup Final","Playoffs","Regular Season",
+    "Preseason","Original Six","Expansion Draft","Entry Draft","Free Agency",
+    "Waivers","Trade Deadline","Salary Cap","Conference Final","Division Title",
+    "Presidents' Trophy","Hart Trophy","Vezina Trophy","Norris Trophy","Calder Trophy",
+    "Art Ross Trophy","Conn Smythe Trophy","Lady Byng Trophy","Selke Trophy","Jack Adams Award",
+    "Rocket Richard Trophy","Ted Lindsay Award","Prince of Wales Trophy","Clarence Campbell Bowl","All-Star Game",
+    "Winter Classic","Stadium Series","Heritage Classic","Hall of Fame","Draft Lottery",
+    "Lockout","Rivalry","Game Seven","Overtime Winner","Series Clincher",
+    "Sweep","Wild Card","Home Ice","Road Trip","Back-to-Back",
+    "Standings","Goal Differential","Plus-Minus","Time on Ice","Save Percentage",
+    "Goals Against Average","Power Play Percentage","Penalty Kill Percentage","Shots on Goal","Shot Attempts",
+    "Hits","Blocked Shots","Takeaways","Giveaways","Faceoff Percentage",
+    "Assist","Primary Assist","Secondary Assist","Game-Winning Goal","Empty-Net Goal",
+    "Overtime Goal","Point Streak","Scoring Title","Rookie of the Year","Entry Level Contract",
+    "Restricted Free Agent","Unrestricted Free Agent","No-Trade Clause","Buyout","Draft Pick",
+    "First Round Pick","Junior Hockey","College Hockey","Minor Leagues","Call-Up",
+    "Healthy Scratch","Injured Reserve","Morning Skate","Warmups","Intermission",
+    "Period","First Period","Second Period","Third Period","Ice Time",
+    "Shift","Power Play Goal","Shorthanded Goal","Hat Toss","Playoff Beard",
+    "Pond Hockey","Outdoor Game","Road Hockey","Street Hockey","National Anthem",
+    "Fan Chant","Season Ticket","Rink Rat"
+  ];
+
   const SPORTS = {
     MLB: {
       dataFile: 'athletes-mlb.js',
@@ -791,6 +878,12 @@
       eyebrowLabel: 'NFL &amp; AFL &middot; Daily Duograms',
       topbarLabel: 'NFL & AFL',
       wordPool: () => [...NFL_TERMS]
+    },
+    NHL: {
+      dataFile: 'athletes-nhl.js',
+      eyebrowLabel: 'NHL &middot; Daily Duograms',
+      topbarLabel: 'NHL',
+      wordPool: () => [...NHL_TEAMS, ...HOCKEY_TERMS]
     }
   };
 
@@ -832,6 +925,15 @@
   let normalizedNameToAthletes = new Map();
   let validCombos = new Set();
   let comboCounts = new Map();
+  // Initials for one athlete entry. Names like "Alejandro De Aza" or "Elly De
+  // La Cruz" have a multi-word last name, which can't be detected from the name
+  // string alone, so the data files may carry an explicit two-letter `initials`
+  // field (e.g. "AD", "ED"). If it's present and valid we use it; otherwise we
+  // fall back to first word + last word of the full name.
+  function initialsFor(a){
+    if(typeof a.initials === 'string' && /^[A-Z]{2}$/.test(a.initials)) return a.initials;
+    return computeInitials2(a.fullName);
+  }
   // Rebuilds all athlete-derived lookups from whatever the current global
   // `athletes` array is. Called after each sport's data file finishes loading.
   function buildAthleteIndexes(){
@@ -839,7 +941,7 @@
     comboCounts = new Map();
     (athletes || []).forEach(a=>{
       const norm = normalizeName(a.fullName);
-      const initials2 = computeInitials2(a.fullName);
+      const initials2 = initialsFor(a);
       const arr = normalizedNameToAthletes.get(norm) || [];
       arr.push({ fullName:a.fullName, initials2, lastYear: (typeof a.lastYear === 'number') ? a.lastYear : null, negroLeagues: a.negroLeagues === true });
       normalizedNameToAthletes.set(norm, arr);
@@ -847,7 +949,7 @@
     });
     // Set of every two-letter initials combo that has at least one real player,
     // used at end-of-game to flag slots that have no possible correct answer.
-    validCombos = new Set((athletes || []).map(a => computeInitials2(a.fullName)));
+    validCombos = new Set((athletes || []).map(a => initialsFor(a)));
   }
   function findMatch(guessText, targetInitials2){
     const ng = normalizeName(guessText || "");
@@ -864,8 +966,9 @@
   // ============================================================
   function pointsForCombo(combo){
     const n = comboCounts.get(combo) || 1;
-    const raw = (1 / n) * 100;
-    return Math.ceil(raw * 100) / 100; // round UP to 2 decimal places
+    // Round UP to 2 decimal places, working in whole cents (10000/n) so that
+    // floating-point error can never push an exact value up an extra cent.
+    return Math.ceil(10000 / n) / 100;
   }
 
   // ============================================================
@@ -887,8 +990,12 @@
     return 1.15;
   }
   function applyAgeBonus(basePoints, lastYear, negroLeagues){
-    const withBonus = basePoints * bonusMultiplierForYear(lastYear, negroLeagues);
-    return Math.ceil(withBonus * 100) / 100; // round UP to 2 decimal places
+    // Round UP to 2 decimal places, working in whole cents and whole percents.
+    // (Multiplying 0.28 * 1.0 * 100 in floating point gives 28.000000000000004,
+    // which used to round up to 0.29 -- an extra cent for a no-bonus answer.)
+    const cents = Math.round(basePoints * 100);
+    const pct   = Math.round(bonusMultiplierForYear(lastYear, negroLeagues) * 100);
+    return Math.ceil(cents * pct / 100) / 100;
   }
 
   // ============================================================
